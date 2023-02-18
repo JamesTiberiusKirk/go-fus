@@ -101,7 +101,7 @@ func (e *ViewEngine) RenderWriter(w io.Writer, name string, data interface{}, us
 	return e.executeTemplate(w, name, data, frame)
 }
 
-//nolint:funlen,gocognit // Too much to unpack for this version
+//nolint:funlen // Too much to unpack for this version
 func (e *ViewEngine) executeTemplate(out io.Writer, name string, data interface{}, frame TemplateType) error {
 	var tpl *template.Template
 	var err error

@@ -17,28 +17,59 @@ type RoutesMap map[string]string
 
 // Site site struct with config and dependencies.
 type Site struct {
-	Name            string
-	Dev             bool
-	RootSitePath    string
-	PublicPages     []*Page
-	AuthedPages     []*Page
-	NotFoundPage    *Page
-	StaticFolders   map[string]string
-	SpaSites        []*SPA
-	SessionManager  *auth.AuthInterface
-	Echo            *echo.Echo
-	FrameTemplates  map[string]string
-	TemplateFuncs   template.FuncMap
+	// Echo - Instance of echo
+	Echo *echo.Echo
+
+	// Name - Name of the site, will be used in AvailableRoutes
+	Name string
+
+	// Dev - Dev mode, used to toggle proxying to local SPA dev servers
+	Dev bool
+
+	// RootSitePath - The root path of the site
+	RootSitePath string
+
+	// PublicPages - Public pages
+	PublicPages []*Page
+
+	// AuthedPages - Pages to be authenticated with the session manager
+	AuthedPages []*Page
+
+	// NotFoundPage - 404 page
+	NotFoundPage *Page
+
+	// StaticFolders - Static folders to serve
+	StaticFolders map[string]string
+
+	// SpaSites - single page apps to initiate
+	SpaSites []*SPA
+
+	// SessionManager - Session manager to use
+	SessionManager auth.AuthInterface
+
+	// FrameTemplates - List of frames which could be used.
+	// For having a no frame option, just create an empty frame.
+	FrameTemplates map[renderer.TemplateType]string
+
+	// TemplateFuncs - is for defining any extra template functions
+	TemplateFuncs template.FuncMap
+
+	// AvailableRoutes - this is for defining a map of availabe routes which exist outside
+	//	the site, which then would be made available in the template
+	// E.G. defining available routes in a json API then being able to access it in template
+	//	with `{{ routes.api.helloWorldRoute }}`
 	AvailableRoutes map[string]RoutesMap
-	TemplateRoot    string
+
+	// TemplateRoot - root folder where the templates are located
+	TemplateRoot string
 }
 
 // Serve to start the server.
 func (s *Site) Serve() {
 	s.buildRenderer()
 
-	s.mapPages(&s.PublicPages)
-	s.mapPages(&s.AuthedPages, sessionAuthMiddleware(s.SessionManager))
+	s.MapPages(&s.PublicPages)
+	s.MapPages(&s.AuthedPages, sessionAuthMiddleware(s.SessionManager))
 
 	// Mapping 404 page
 	s.Echo.GET(s.RootSitePath+s.NotFoundPage.Path,
@@ -61,8 +92,7 @@ func (s *Site) SetRoutes(t string, r RoutesMap) {
 func (s *Site) buildRenderer() {
 	s.Echo.Renderer = renderer.New(renderer.Config{
 		Root:         s.TemplateRoot,
-		Master:       s.FrameTemplates["frame"],
-		NoFrame:      s.FrameTemplates["no_frame"],
+		Frames:       s.FrameTemplates,
 		Funcs:        s.TemplateFuncs,
 		DisableCache: true,
 	})
@@ -99,7 +129,8 @@ func (s *Site) mapStatic() {
 	}
 }
 
-func (s *Site) mapPages(pages *[]*Page, middlewares ...echo.MiddlewareFunc) {
+// MapPages - takes a pointer to a list of Pages and any middlewares to be used when initiating them.
+func (s *Site) MapPages(pages *[]*Page, middlewares ...echo.MiddlewareFunc) {
 	for _, p := range *pages {
 		route := s.RootSitePath + p.Path
 		s.AvailableRoutes[s.Name][p.MenuID] = route
