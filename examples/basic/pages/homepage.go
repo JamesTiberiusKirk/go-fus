@@ -1,7 +1,7 @@
 package pages
 
 import (
-	"github.com/JamesTiberiusKirk/go-fus/examples/basic/pages/components"
+	"github.com/JamesTiberiusKirk/go-fus/examples/basic/components"
 	"github.com/JamesTiberiusKirk/go-fus/fus"
 	"github.com/JamesTiberiusKirk/go-fus/renderer"
 	"github.com/labstack/echo/v4"
