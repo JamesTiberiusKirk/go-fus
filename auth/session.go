@@ -33,7 +33,7 @@ func New(sessionName string, sessionLifeSpan int) *SessionManager {
 func (m *SessionManager) InitSession(user interface{}, c echo.Context) error {
 	sess, err := m.Jar.Get(c.Request(), m.sessionName)
 	if err != nil {
-		return fmt.Errorf("error getting session: %s", err)
+		return fmt.Errorf("error getting session: %w", err)
 	}
 
 	sess.Options = &sessions.Options{
@@ -46,7 +46,7 @@ func (m *SessionManager) InitSession(user interface{}, c echo.Context) error {
 
 	err = sess.Save(c.Request(), c.Response())
 	if err != nil {
-		return fmt.Errorf("error saving session: %s", err)
+		return fmt.Errorf("error saving session: %w", err)
 	}
 
 	return nil
@@ -56,14 +56,14 @@ func (m *SessionManager) InitSession(user interface{}, c echo.Context) error {
 func (m *SessionManager) TerminateSession(c echo.Context) error {
 	sess, err := m.Jar.Get(c.Request(), m.sessionName)
 	if err != nil {
-		return fmt.Errorf("error getting session: %s", err)
+		return fmt.Errorf("error getting session: %w", err)
 	}
 
 	// MaxAge < 0 means delete imediately
 	sess.Options.MaxAge = -1
 	err = sess.Save(c.Request(), c.Response())
 	if err != nil {
-		return fmt.Errorf("error saving session: %s", err)
+		return fmt.Errorf("error saving session: %w", err)
 	}
 
 	return nil
@@ -74,7 +74,7 @@ func (m *SessionManager) TerminateSession(c echo.Context) error {
 func (m *SessionManager) IsAuthenticated(c echo.Context) (bool, error) {
 	sess, err := m.Jar.Get(c.Request(), m.sessionName)
 	if err != nil {
-		return false, fmt.Errorf("error getting session: %s", err)
+		return false, fmt.Errorf("error getting session: %w", err)
 	}
 
 	return sess.Values["email"] != nil, nil
@@ -82,7 +82,7 @@ func (m *SessionManager) IsAuthenticated(c echo.Context) (bool, error) {
 
 // GetUser checks that a provided request is born from an active session.
 // As long as there is an active session, User is returned, else empty User.
-func (m *SessionManager) GetUser(c echo.Context) (models.User, error) {
+func (m *SessionManager) GetUser(c echo.Context) (interface{}, error) {
 	sess, err := m.Jar.Get(c.Request(), m.sessionName)
 	if err != nil {
 		return models.User{}, err
@@ -92,18 +92,10 @@ func (m *SessionManager) GetUser(c echo.Context) (models.User, error) {
 		return models.User{}, nil
 	}
 
-	email, ok := sess.Values["email"]
+	user, ok := sess.Values["user"]
 	if !ok {
 		return models.User{}, nil
 	}
 
-	username, ok := sess.Values["username"]
-	if !ok {
-		return models.User{}, nil
-	}
-
-	return models.User{
-		Email:    email.(string),
-		Username: username.(string),
-	}, nil
+	return user, nil
 }

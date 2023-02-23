@@ -6,7 +6,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	"github.com/JamesTiberiusKirk/go-fus/fus/auth"
+	"github.com/JamesTiberiusKirk/go-fus/auth"
 	"github.com/JamesTiberiusKirk/go-fus/renderer"
 	"github.com/labstack/echo/v4"
 
@@ -20,7 +20,7 @@ type Site struct {
 	// Echo - Instance of echo
 	Echo *echo.Echo
 
-	// Name - Name of the site, will be used in AvailableRoutes
+	// Name - Name of the site, will be used in AvailableRoutes.
 	Name string
 
 	// Dev - Dev mode, used to toggle proxying to local SPA dev servers
@@ -45,11 +45,11 @@ type Site struct {
 	SpaSites []*SPA
 
 	// SessionManager - Session manager to use
-	SessionManager auth.AuthInterface
+	SessionManager auth.SessionInterface
 
 	// FrameTemplates - List of frames which could be used.
 	// For having a no frame option, just create an empty frame.
-	FrameTemplates map[renderer.TemplateType]string
+	FrameTemplates map[string]string
 
 	// TemplateFuncs - is for defining any extra template functions
 	TemplateFuncs template.FuncMap
@@ -64,16 +64,64 @@ type Site struct {
 	TemplateRoot string
 }
 
+func NewSite(e *echo.Echo, name string, dev bool, rootSitePath string,
+	availableRoutes map[string]RoutesMap) Site {
+	if availableRoutes == nil {
+		availableRoutes = map[string]RoutesMap{}
+	}
+	availableRoutes[name] = RoutesMap{}
+
+	return Site{
+		Echo:            e,
+		Name:            name,
+		Dev:             dev,
+		RootSitePath:    rootSitePath,
+		AvailableRoutes: availableRoutes,
+	}
+}
+
+// SetupTemplating Setting up templating option for the site.
+func (s *Site) SetupTemplating(
+	templateRoot string,
+	publicPages, authedPages []*Page,
+	notFoundPage *Page,
+	frameTemplates map[string]string,
+	templateFuncs template.FuncMap) {
+	//
+	// if frameTemplates == nil {
+	// 	frameTemplates = map[string]string{}
+	// }
+	//
+	// frameTemplates[]
+	//
+	s.TemplateRoot = templateRoot
+	s.PublicPages = publicPages
+	s.AuthedPages = authedPages
+	s.NotFoundPage = notFoundPage
+	s.FrameTemplates = frameTemplates
+	s.TemplateFuncs = templateFuncs
+}
+
+// SetupSPA Mapping single page app for the site.
+func (s *Site) SetupSPA(spa []*SPA) {
+	s.SpaSites = spa
+}
+
+// SetupStatic Mapping static folders for the site.
+func (s *Site) SetupStatic(staticFolders map[string]string) {
+	s.StaticFolders = staticFolders
+}
+
 // Serve to start the server.
 func (s *Site) Serve() {
 	s.buildRenderer()
 
 	s.MapPages(&s.PublicPages)
-	s.MapPages(&s.AuthedPages, sessionAuthMiddleware(s.SessionManager))
+	// s.MapPages(&s.AuthedPages, sessionAuthMiddleware(s.SessionManager))
 
 	// Mapping 404 page
-	s.Echo.GET(s.RootSitePath+s.NotFoundPage.Path,
-		s.NotFoundPage.GetPageHandler(http.StatusNotFound, *s.SessionManager, s.AvailableRoutes))
+	s.Echo.GET(s.RootSitePath+s.NotFoundPage.URI,
+		s.NotFoundPage.getPageHandler(http.StatusNotFound, s.SessionManager, s.AvailableRoutes))
 
 	s.mapStatic()
 	s.mapSPA()
@@ -87,6 +135,38 @@ func (s *Site) GetRoutes() RoutesMap {
 // SetRoutes which would be used in the templating engine.
 func (s *Site) SetRoutes(t string, r RoutesMap) {
 	s.AvailableRoutes[t] = r
+}
+
+// MapPages - takes a pointer to a list of Pages and any middlewares to be used when initiating them.
+func (s *Site) MapPages(pages *[]*Page, middlewares ...echo.MiddlewareFunc) {
+	if pages == nil {
+		return
+	}
+
+	if s.AvailableRoutes != nil {
+		for _, p := range *pages {
+			route := s.RootSitePath + p.URI
+			s.AvailableRoutes[s.Name][p.ID] = route
+		}
+	}
+
+	for _, p := range *pages {
+		route := s.RootSitePath + p.URI
+		pageHandler := p.getPageHandler(http.StatusOK, s.SessionManager, s.AvailableRoutes)
+		s.Echo.GET(route, pageHandler, middlewares...)
+
+		if p.PostHandler != nil {
+			s.Echo.POST(route, p.PostHandler, middlewares...)
+		}
+
+		if p.DeleteHandler != nil {
+			s.Echo.DELETE(route, p.DeleteHandler, middlewares...)
+		}
+
+		if p.PutHandler != nil {
+			s.Echo.PUT(route, p.PutHandler, middlewares...)
+		}
+	}
 }
 
 func (s *Site) buildRenderer() {
@@ -126,30 +206,5 @@ func (s *Site) mapSPA(_ ...echo.MiddlewareFunc) {
 func (s *Site) mapStatic() {
 	for k, v := range s.StaticFolders {
 		s.Echo.Static(k, v)
-	}
-}
-
-// MapPages - takes a pointer to a list of Pages and any middlewares to be used when initiating them.
-func (s *Site) MapPages(pages *[]*Page, middlewares ...echo.MiddlewareFunc) {
-	for _, p := range *pages {
-		route := s.RootSitePath + p.Path
-		s.AvailableRoutes[s.Name][p.MenuID] = route
-	}
-
-	for _, p := range *pages {
-		route := s.RootSitePath + p.Path
-		s.Echo.GET(route, p.GetPageHandler(http.StatusOK, *s.SessionManager, s.AvailableRoutes), middlewares...)
-
-		if p.PostHandler != nil {
-			s.Echo.POST(route, p.PostHandler, middlewares...)
-		}
-
-		if p.DeleteHandler != nil {
-			s.Echo.DELETE(route, p.DeleteHandler, middlewares...)
-		}
-
-		if p.PutHandler != nil {
-			s.Echo.PUT(route, p.PutHandler, middlewares...)
-		}
 	}
 }

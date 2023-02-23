@@ -1,0 +1,18 @@
+<html>
+  <head>
+    {{ .meta.Title }}
+
+    <style>
+      #id{
+        outline-width: 5px;
+        outline-style: dashed;
+        outline-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+      {{ template "content" . }}
+    </div>
+  </body>
+</html>

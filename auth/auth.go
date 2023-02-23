@@ -5,8 +5,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type SessionInterface[userType interface{}] interface {
+type SessionInterface interface {
+	InitSession(user interface{}, c echo.Context) error
+	TerminateSession(c echo.Context) error
 	IsAuthenticated(c echo.Context) bool
-	GetUser(c echo.Context) (userType, error)
+	GetUser(c echo.Context) (interface{}, error)
 	GetJar() *sessions.CookieStore
 }
