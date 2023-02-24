@@ -1,6 +1,9 @@
 package site
 
 import (
+	"encoding/json"
+	"html/template"
+
 	"github.com/JamesTiberiusKirk/go-fus/examples/basic/pages"
 	"github.com/JamesTiberiusKirk/go-fus/fus"
 	"github.com/labstack/echo/v4"
@@ -21,16 +24,28 @@ func NewTestSie(echo *echo.Echo, secret string) *TestSite {
 		someSecret: secret,
 	}
 
+	publicPages := []fus.PageInterface{
+		pages.NewHomepage(),
+	}
+
 	site.SetupTemplating("examples/basic/templates",
-		[]*fus.Page{
-			pages.NewHomepage(),
-		},
+		publicPages,
 		nil,
 		pages.NewNotFoundPage(),
 		map[string]string{
 			Frame: "frame.gohtml",
 		},
-		nil,
+		template.FuncMap{
+			"toJson": func(val interface{}) string {
+				bytes, _ := json.MarshalIndent(val, "", "	")
+				// bytes, err := json.Marshal(val)
+				// if err != nil {
+				// 	return "", fmt.Errorf("error marshling json in toJson template func %w", err)
+				// }
+
+				return string(bytes)
+			},
+		},
 	)
 	return site
 }

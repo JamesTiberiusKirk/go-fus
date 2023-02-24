@@ -3,35 +3,42 @@ package pages
 import (
 	"github.com/JamesTiberiusKirk/go-fus/examples/basic/components"
 	"github.com/JamesTiberiusKirk/go-fus/fus"
-	"github.com/JamesTiberiusKirk/go-fus/renderer"
 	"github.com/labstack/echo/v4"
 )
 
 type HomepageData struct {
 	SecretString string
-	Cmp          renderer.ComponentInterface
+	Cmp          fus.ComponentInterface
 }
 
 type Homepage struct {
+	*fus.Page
 	Secret string
+	// Any dependencies here...
 }
 
-func NewHomepage() *fus.Page {
-	deps := &Homepage{}
-	return &fus.Page{
-		Deps:        deps,
-		Title:       "Home page",
-		ID:          "homepage",
-		URI:         "/",
-		Frame:       "frame",
-		Template:    "homepage.gohtml",
-		GetPageData: deps.GetPageData,
+func NewHomepage() *Homepage {
+	homepage := &Homepage{
+		Secret: "secret string",
 	}
+	homepage.Page = &fus.Page{
+		Title:           "Home page",
+		ID:              "homepage",
+		URI:             "/",
+		Frame:           "frame",
+		Template:        "homepage.gohtml",
+		PageDataHandler: homepage.getPageData,
+		// Components: map[string]fus.ComponentInterface{
+		// 	"homePageComponent": components.NewHomePageComponent(c, components.HomePageCompoentParams{}),
+		// },
+	}
+
+	return homepage
 }
 
-func (h *Homepage) GetPageData(c echo.Context) (interface{}, error) {
+func (h *Homepage) getPageData(c echo.Context) (interface{}, error) {
 	return HomepageData{
-		SecretString: h.Secret,
+		SecretString: "",
 		Cmp:          components.NewHomePageComponent(c, components.HomePageCompoentParams{}),
 	}, nil
 }

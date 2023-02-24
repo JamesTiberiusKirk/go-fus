@@ -2,44 +2,49 @@ package renderer
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 )
 
-// defaultFileHandler new default file handler
-// This is just supposed to read the file and return a string as content.
-func defaultFileHandler() FileHandler {
-	return func(config Config, tplFile string) (string, error) {
-		// Get the absolute path of the root template
-		path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
-		if err != nil {
-			return "", fmt.Errorf("ViewEngine path:%v error: %w", path, err)
-		}
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return "", fmt.Errorf("ViewEngine render read name:%v, path:%v, error: %w", tplFile, path, err)
-		}
-		return string(data), nil
-	}
-}
+type FileHandlerType string
 
-// InFolderFileHandler new default file handler
-// This is just supposed to read the file and return a string as content.
-func InFolderFileHandler() FileHandler {
-	return func(config Config, tplFile string) (string, error) {
-		// Get the absolute path of the root template
+const (
+	SingleFolder FileHandlerType = "single-file"
+	MultiFolder  FileHandlerType = "multi-folder" // TODO: Not inplemented
+)
 
-		log.Println("tplFile:", tplFile)
-
-		path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
-		if err != nil {
-			return "", fmt.Errorf("ViewEngine path:%v error: %w", path, err)
+func getFileHandler(t FileHandlerType) FileHandler {
+	switch t {
+	case MultiFolder:
+		// TODO: Need to actually implement this
+		return func(config Config, tplFile string) (string, error) {
+			// Get the absolute path of the root template
+			path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
+			if err != nil {
+				return "", fmt.Errorf("ViewEngine handler:%s path:%v error: %w", MultiFolder, path, err)
+			}
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return "", fmt.Errorf("ViewEngine render read handler:%s name:%v, path:%v, error: %w",
+					MultiFolder, tplFile, path, err)
+			}
+			return string(data), nil
 		}
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return "", fmt.Errorf("ViewEngine render read name:%v, path:%v, error: %w", tplFile, path, err)
+	case SingleFolder:
+		return func(config Config, tplFile string) (string, error) {
+			// Get the absolute path of the root template
+			path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
+			if err != nil {
+				return "", fmt.Errorf("ViewEngine handler:%s path:%v error: %w", SingleFolder, path, err)
+			}
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return "", fmt.Errorf("ViewEngine render read handler:%s name:%v, path:%v, error: %w",
+					SingleFolder, tplFile, path, err)
+			}
+			return string(data), nil
 		}
-		return string(data), nil
+	default:
+		return getFileHandler(SingleFolder)
 	}
 }

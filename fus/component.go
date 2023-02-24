@@ -7,11 +7,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type ComponentInterface interface {
+	GetID() string
+	GetTemplate() string
+	GenerateComponentData(parentData interface{}) (echo.Map, error)
+	GetCompoents() map[string]ComponentInterface
+}
+
 type Component struct {
 	context         echo.Context
 	id              string
 	template        string
 	getCompoentData func() (interface{}, error)
+	compoents       map[string]ComponentInterface
 }
 
 type dataGetterFunc func() (interface{}, error)
@@ -55,6 +63,10 @@ func (comp *Component) GenerateComponentData(parentData interface{}) (echo.Map, 
 	// }
 
 	return echoData, nil
+}
+
+func (comp *Component) GetCompoents() map[string]ComponentInterface {
+	return comp.compoents
 }
 
 // func (comp *Component) buildComponentMetaData(c echo.Context) MetaData {

@@ -2,6 +2,7 @@ package fus
 
 import (
 	"errors"
+	"log"
 
 	"github.com/JamesTiberiusKirk/go-fus/auth"
 	"github.com/labstack/echo/v4"
@@ -13,6 +14,24 @@ type MetaData struct {
 	Title    string
 	URLError string
 	Success  string
+}
+
+// PageInterface interface which is implemented by the Page struct bellow
+// TODO: write docs for the rest of the funcs
+type PageInterface interface {
+	GetID() string
+	GetTitle() string
+	GetFrame() string
+	GetURI() string
+	GetPageDataHandler() func(c echo.Context) (interface{}, error)
+	GetPostHandler() echo.HandlerFunc
+	GetDeleteHandler() echo.HandlerFunc
+	GetPutHandler() echo.HandlerFunc
+
+	// This one is for internal use
+	// TODO: make it private?
+	GetPageHandler(httpStatus int, session auth.SessionInterface, routesMap map[string]RoutesMap) echo.HandlerFunc
+	GetComponents() map[string]ComponentInterface
 }
 
 // Page is used by every page in a site
@@ -35,32 +54,20 @@ type Page struct {
 	// Template file to be used. Needs to be inside the template directory in Site.
 	Template string
 
-	// Deps - any dependencies the page needs to use.
-	Deps interface{}
+	PageDataHandler func(c echo.Context) (interface{}, error)
+	PostHandler     echo.HandlerFunc
+	DeleteHandler   echo.HandlerFunc
+	PutHandler      echo.HandlerFunc
 
-	// GetPageData function to get any data used in the teamplate.
-	// Both of the returns are passed to the template.
-	GetPageData func(c echo.Context) (interface{}, error)
-
-	// PostHandler a POST handler for the page.
-	// Can be nil to omit the definition of one.
-	PostHandler echo.HandlerFunc
-
-	// DeleteHandler a DELETE handler for the page.
-	// Can be nil to omit the definition of one.
-	DeleteHandler echo.HandlerFunc
-
-	// PutHandler a PUT handler for the page.
-	// Can be nil to omit the definition of one.
-	PutHandler echo.HandlerFunc
+	Components map[string]ComponentInterface
 }
 
 const (
 	UseFrameName = "frame"
 )
 
-// getPageHandler is a get handler which uses the echo Render function.
-func (p *Page) getPageHandler(httpStatus int, session auth.SessionInterface,
+// GetPageHandler is a get handler which uses the echo Render function.
+func (p *Page) GetPageHandler(httpStatus int, session auth.SessionInterface,
 	routesMap map[string]RoutesMap) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		c.Set(UseFrameName, p.Frame)
@@ -80,7 +87,10 @@ func (p *Page) getPageHandler(httpStatus int, session auth.SessionInterface,
 			echoData["user"] = user
 		}
 
-		pageData, err := p.GetPageData(c)
+		handler := p.GetPageDataHandler()
+		pageData, err := handler(c)
+
+		log.Println(pageData == true)
 		echoData["data"] = pageData
 		echoData["error"] = err
 
@@ -100,4 +110,16 @@ func (p *Page) buildBasePageMetaData(c echo.Context) MetaData {
 		URLError: c.QueryParam("error"),
 		Success:  c.QueryParam("success"),
 	}
+}
+
+func (p *Page) GetID() string                      { return p.ID }
+func (p *Page) GetTitle() string                   { return p.Title }
+func (p *Page) GetFrame() string                   { return p.Frame }
+func (p *Page) GetURI() string                     { return p.URI }
+func (p *Page) GetPostHandler() echo.HandlerFunc   { return p.PostHandler }
+func (p *Page) GetDeleteHandler() echo.HandlerFunc { return p.DeleteHandler }
+func (p *Page) GetPutHandler() echo.HandlerFunc    { return p.PutHandler }
+
+func (p *Page) GetPageDataHandler() func(c echo.Context) (interface{}, error) {
+	return p.PageDataHandler
 }

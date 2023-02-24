@@ -13,6 +13,7 @@ type ComponentInterface interface {
 	GetID() string
 	GetTemplate() string
 	GenerateComponentData(parentData interface{}) (echo.Map, error)
+	GetCompoents() map[string]ComponentInterface
 }
 
 type (

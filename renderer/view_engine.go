@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/labstack/echo/v4"
@@ -26,16 +25,17 @@ type ViewEngine struct {
 	fileHandler FileHandler
 }
 
-// M map interface for data.
-type M map[string]interface{}
-
 // New new template engine.
 func New(config Config) *ViewEngine {
+	if config.FileHandlerType == "" {
+		config.FileHandlerType = SingleFolder
+	}
+
 	return &ViewEngine{
 		config:      config,
 		tplMap:      make(map[string]*template.Template),
 		tplMutex:    sync.RWMutex{},
-		fileHandler: defaultFileHandler(),
+		fileHandler: getFileHandler(config.FileHandlerType),
 	}
 }
 
@@ -106,10 +106,8 @@ func (e *ViewEngine) executeTemplate(out io.Writer, name string, data interface{
 			}
 			var tmpl *template.Template
 			if t == name {
-				log.Println("template equals to name", t)
 				tmpl = tpl
 			} else {
-				log.Println("template not equals to name", t)
 				tmpl = tpl.New(t)
 			}
 			_, err = tmpl.Parse(data)

@@ -4,12 +4,13 @@ import "html/template"
 
 // Config configuration options.
 type Config struct {
-	Root         string            // view root
-	Frames       map[string]string // list of frames
-	Partials     []string          // template partial, such as head, foot
-	Funcs        template.FuncMap  // template functions
-	DisableCache bool              // disable cache, debug mode
-	Delims       Delims            // delimeters
+	Root            string            // view root
+	Frames          map[string]string // list of frames
+	Partials        []string          // template partial, such as head, foot
+	Funcs           template.FuncMap  // template functions
+	DisableCache    bool              // disable cache, debug mode
+	Delims          Delims            // delimeters
+	FileHandlerType FileHandlerType   // type of existing file handler
 }
 
 // DefaultConfig default config.

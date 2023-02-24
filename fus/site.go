@@ -30,13 +30,13 @@ type Site struct {
 	RootSitePath string
 
 	// PublicPages - Public pages
-	PublicPages []*Page
+	PublicPages []PageInterface
 
 	// AuthedPages - Pages to be authenticated with the session manager
-	AuthedPages []*Page
+	AuthedPages []PageInterface
 
 	// NotFoundPage - 404 page
-	NotFoundPage *Page
+	NotFoundPage PageInterface
 
 	// StaticFolders - Static folders to serve
 	StaticFolders map[string]string
@@ -83,17 +83,10 @@ func NewSite(e *echo.Echo, name string, dev bool, rootSitePath string,
 // SetupTemplating Setting up templating option for the site.
 func (s *Site) SetupTemplating(
 	templateRoot string,
-	publicPages, authedPages []*Page,
-	notFoundPage *Page,
+	publicPages, authedPages []PageInterface,
+	notFoundPage PageInterface,
 	frameTemplates map[string]string,
 	templateFuncs template.FuncMap) {
-	//
-	// if frameTemplates == nil {
-	// 	frameTemplates = map[string]string{}
-	// }
-	//
-	// frameTemplates[]
-	//
 	s.TemplateRoot = templateRoot
 	s.PublicPages = publicPages
 	s.AuthedPages = authedPages
@@ -120,8 +113,8 @@ func (s *Site) Serve() {
 	// s.MapPages(&s.AuthedPages, sessionAuthMiddleware(s.SessionManager))
 
 	// Mapping 404 page
-	s.Echo.GET(s.RootSitePath+s.NotFoundPage.URI,
-		s.NotFoundPage.getPageHandler(http.StatusNotFound, s.SessionManager, s.AvailableRoutes))
+	s.Echo.GET(s.RootSitePath+s.NotFoundPage.GetURI(),
+		s.NotFoundPage.GetPageHandler(http.StatusNotFound, s.SessionManager, s.AvailableRoutes))
 
 	s.mapStatic()
 	s.mapSPA()
@@ -138,33 +131,33 @@ func (s *Site) SetRoutes(t string, r RoutesMap) {
 }
 
 // MapPages - takes a pointer to a list of Pages and any middlewares to be used when initiating them.
-func (s *Site) MapPages(pages *[]*Page, middlewares ...echo.MiddlewareFunc) {
+func (s *Site) MapPages(pages *[]PageInterface, middlewares ...echo.MiddlewareFunc) {
 	if pages == nil {
 		return
 	}
 
 	if s.AvailableRoutes != nil {
 		for _, p := range *pages {
-			route := s.RootSitePath + p.URI
-			s.AvailableRoutes[s.Name][p.ID] = route
+			route := s.RootSitePath + p.GetURI()
+			s.AvailableRoutes[s.Name][p.GetID()] = route
 		}
 	}
 
 	for _, p := range *pages {
-		route := s.RootSitePath + p.URI
-		pageHandler := p.getPageHandler(http.StatusOK, s.SessionManager, s.AvailableRoutes)
+		route := s.RootSitePath + p.GetURI()
+		pageHandler := p.GetPageHandler(http.StatusOK, s.SessionManager, s.AvailableRoutes)
 		s.Echo.GET(route, pageHandler, middlewares...)
 
-		if p.PostHandler != nil {
-			s.Echo.POST(route, p.PostHandler, middlewares...)
+		if p.GetPostHandler() != nil {
+			s.Echo.POST(route, p.GetPostHandler(), middlewares...)
 		}
 
-		if p.DeleteHandler != nil {
-			s.Echo.DELETE(route, p.DeleteHandler, middlewares...)
+		if p.GetDeleteHandler() != nil {
+			s.Echo.DELETE(route, p.GetDeleteHandler(), middlewares...)
 		}
 
-		if p.PutHandler != nil {
-			s.Echo.PUT(route, p.PutHandler, middlewares...)
+		if p.GetPutHandler() != nil {
+			s.Echo.PUT(route, p.GetPutHandler(), middlewares...)
 		}
 	}
 }
