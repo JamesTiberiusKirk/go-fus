@@ -168,6 +168,7 @@ func (s *Site) buildRenderer() {
 		Frames:       s.FrameTemplates,
 		Funcs:        s.TemplateFuncs,
 		DisableCache: true,
+		Dev:          s.Dev,
 	})
 }
 

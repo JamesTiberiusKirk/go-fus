@@ -6,23 +6,16 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/labstack/echo/v4"
+	"github.com/JamesTiberiusKirk/go-fus/fusint"
 )
 
-type ComponentInterface interface {
-	GetID() string
-	GetTemplate() string
-	GenerateComponentData(parentData interface{}) (echo.Map, error)
-	GetCompoents() map[string]ComponentInterface
-}
-
 type (
-	compnentFunc func(component ComponentInterface) (template.HTML, error)
+	compnentFunc func(component fusint.ComponentInterface) (template.HTML, error)
 	includeFunc  func(tmpl string) (template.HTML, error)
 )
 
 func (e *ViewEngine) getCmpFunc(data interface{}) compnentFunc {
-	return func(component ComponentInterface) (template.HTML, error) {
+	return func(component fusint.ComponentInterface) (template.HTML, error) {
 		var html template.HTML
 
 		componentData, errInclude := component.GenerateComponentData(data)

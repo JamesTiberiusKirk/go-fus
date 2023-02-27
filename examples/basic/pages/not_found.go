@@ -18,7 +18,7 @@ func NewNotFoundPage() *NotFoundPage {
 			URI:      "/*",
 			Template: "not_found.gohtml",
 			PageDataHandler: func(c echo.Context) (interface{}, error) {
-				return "", nil
+				return nil, nil
 			},
 		},
 	}

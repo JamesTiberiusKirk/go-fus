@@ -1,33 +1,25 @@
 package fus
 
 import (
-	"log"
+	"errors"
 
-	"github.com/JamesTiberiusKirk/go-fus/renderer"
+	"github.com/JamesTiberiusKirk/go-fus/fusint"
 	"github.com/labstack/echo/v4"
 )
 
-type ComponentInterface interface {
-	GetID() string
-	GetTemplate() string
-	GenerateComponentData(parentData interface{}) (echo.Map, error)
-	GetCompoents() map[string]ComponentInterface
-}
-
 type Component struct {
 	context         echo.Context
-	id              string
+	id              string // For use in the template
 	template        string
-	getCompoentData func() (interface{}, error)
-	compoents       map[string]ComponentInterface
+	getCompoentData dataGetterFunc
+	compoents       []fusint.ComponentInterface
 }
 
-type dataGetterFunc func() (interface{}, error)
+type dataGetterFunc func(c echo.Context) (interface{}, error)
 
-func NewComponent(c echo.Context, id, template string,
+func NewComponent(id, template string,
 	dataGetter dataGetterFunc) *Component {
 	return &Component{
-		context:         c,
 		id:              id,
 		template:        template,
 		getCompoentData: dataGetter,
@@ -43,37 +35,36 @@ func (comp *Component) GetID() string {
 }
 
 func (comp *Component) GenerateComponentData(parentData interface{}) (echo.Map, error) {
-	log.Println("Setting frame as include")
-	log.Println(comp.template)
-	comp.context.Set(renderer.FrameEchoContextName, renderer.Include)
-
-	echoData := echo.Map{
-		// "meta": comp.buildComponentMetaData(comp.context),
-		// "routes": routesMap,
+	if comp.context == nil {
+		return nil, errors.New("no context provided")
 	}
 
-	cmpData, err := comp.getCompoentData()
+	// comp.context.Set(renderer.FrameEchoContextName, renderer.Include)
+	// comp.context.Set("frame", "include")
+
+	echoData := echo.Map{}
+
+	cmpData, err := comp.getCompoentData(comp.context)
 	echoData["cmpData"] = cmpData
 	echoData["error"] = err
 	echoData["parentData"] = parentData
 
-	// err = comp.context.Render(httpStatus, comp.template, echoData)
-	// if err != nil {
-	// 	return echoData, err
-	// }
+	components := comp.GetCompoents()
+	compoentsMap := echo.Map{}
+	for _, component := range components {
+		component.SetContext(comp.context)
+		compoentsMap[component.GetID()] = component
+	}
+
+	echoData["c"] = compoentsMap
 
 	return echoData, nil
 }
 
-func (comp *Component) GetCompoents() map[string]ComponentInterface {
+func (comp *Component) GetCompoents() []fusint.ComponentInterface {
 	return comp.compoents
 }
 
-// func (comp *Component) buildComponentMetaData(c echo.Context) MetaData {
-// 	return MetaData{
-// 		ID: comp.id,
-// 		// Title:    comp.Title,
-// 		URLError: c.QueryParam("error"),
-// 		Success:  c.QueryParam("success"),
-// 	}
-// }
+func (comp *Component) SetContext(c echo.Context) {
+	comp.context = c
+}

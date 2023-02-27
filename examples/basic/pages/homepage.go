@@ -3,12 +3,13 @@ package pages
 import (
 	"github.com/JamesTiberiusKirk/go-fus/examples/basic/components"
 	"github.com/JamesTiberiusKirk/go-fus/fus"
+	"github.com/JamesTiberiusKirk/go-fus/fusint"
 	"github.com/labstack/echo/v4"
 )
 
 type HomepageData struct {
 	SecretString string
-	Cmp          fus.ComponentInterface
+	Cmp          fusint.ComponentInterface
 }
 
 type Homepage struct {
@@ -28,9 +29,9 @@ func NewHomepage() *Homepage {
 		Frame:           "frame",
 		Template:        "homepage.gohtml",
 		PageDataHandler: homepage.getPageData,
-		// Components: map[string]fus.ComponentInterface{
-		// 	"homePageComponent": components.NewHomePageComponent(c, components.HomePageCompoentParams{}),
-		// },
+		Components: []fusint.ComponentInterface{
+			components.NewHomePageComponent(components.HomePageCompoentParams{}),
+		},
 	}
 
 	return homepage
@@ -39,6 +40,5 @@ func NewHomepage() *Homepage {
 func (h *Homepage) getPageData(c echo.Context) (interface{}, error) {
 	return HomepageData{
 		SecretString: "",
-		Cmp:          components.NewHomePageComponent(c, components.HomePageCompoentParams{}),
 	}, nil
 }

@@ -14,13 +14,12 @@ type HomePageCompoentParams struct {
 	Data string
 }
 
-func NewHomePageComponent(c echo.Context,
-	params HomePageCompoentParams) *HomePageCompoent {
+func NewHomePageComponent(params HomePageCompoentParams) *HomePageCompoent {
 	return &HomePageCompoent{
-		Component: fus.NewComponent(c,
+		Component: fus.NewComponent(
 			"homePageComponent",
 			"homepage_component.gohtml",
-			func() (interface{}, error) {
+			func(c echo.Context) (interface{}, error) {
 				return params, nil
 			},
 		),

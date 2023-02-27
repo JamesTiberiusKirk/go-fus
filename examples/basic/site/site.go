@@ -38,11 +38,6 @@ func NewTestSie(echo *echo.Echo, secret string) *TestSite {
 		template.FuncMap{
 			"toJson": func(val interface{}) string {
 				bytes, _ := json.MarshalIndent(val, "", "	")
-				// bytes, err := json.Marshal(val)
-				// if err != nil {
-				// 	return "", fmt.Errorf("error marshling json in toJson template func %w", err)
-				// }
-
 				return string(bytes)
 			},
 		},

@@ -11,18 +11,20 @@ type Config struct {
 	DisableCache    bool              // disable cache, debug mode
 	Delims          Delims            // delimeters
 	FileHandlerType FileHandlerType   // type of existing file handler
+	Dev             bool
 }
 
 // DefaultConfig default config.
-func DefaultConfig() Config {
-	return Config{
-		Root:         "views",
-		Partials:     []string{},
-		Funcs:        make(template.FuncMap),
-		DisableCache: false,
-		Delims:       Delims{Left: "{{", Right: "}}"},
-	}
-}
+// TODO: actually implement this?
+// func DefaultConfig() Config {
+// 	return Config{
+// 		Root:         "views",
+// 		Partials:     []string{},
+// 		Funcs:        make(template.FuncMap),
+// 		DisableCache: false,
+// 		Delims:       Delims{Left: "{{", Right: "}}"},
+// 	}
+// }
 
 // Delims delims for template.
 type Delims struct {

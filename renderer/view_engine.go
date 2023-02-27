@@ -39,22 +39,20 @@ func New(config Config) *ViewEngine {
 	}
 }
 
-// Default new default template engine.
-func Default() *ViewEngine {
-	return New(DefaultConfig())
-}
-
-// Render render template for echo interface.
+// Render render func called by echo c.Render().
 func (e *ViewEngine) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	//nolint:errcheck // No error to check
 	frame := c.Get(FrameEchoContextName).(string)
-	return e.RenderWriter(w, name, data, frame)
-}
+	if frame == "" {
+		frame = Include
+	}
 
-// RenderWriter render template with io.Writer.
-func (e *ViewEngine) RenderWriter(w io.Writer, name string, data interface{},
-	frame string) error {
-	return e.executeTemplate(w, name, data, frame)
+	err := e.executeTemplate(w, name, data, frame)
+	if e.config.Dev {
+		return returnErrToBrowser(w, c, err)
+	}
+
+	return err
 }
 
 func (e *ViewEngine) executeTemplate(out io.Writer, name string, data interface{},
@@ -129,9 +127,6 @@ func (e *ViewEngine) executeTemplate(out io.Writer, name string, data interface{
 
 	return nil
 }
-
-// FileHandler file handler interface.
-type FileHandler func(config Config, tplFile string) (content string, err error)
 
 func appendIfNotEmpty(array []string, value string) []string {
 	if value != "" {

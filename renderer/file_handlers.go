@@ -13,6 +13,9 @@ const (
 	MultiFolder  FileHandlerType = "multi-folder" // TODO: Not inplemented
 )
 
+// FileHandler file handler interface.
+type FileHandler func(config Config, tplFile string) (content string, err error)
+
 func getFileHandler(t FileHandlerType) FileHandler {
 	switch t {
 	case MultiFolder:

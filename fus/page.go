@@ -2,9 +2,9 @@ package fus
 
 import (
 	"errors"
-	"log"
 
 	"github.com/JamesTiberiusKirk/go-fus/auth"
+	"github.com/JamesTiberiusKirk/go-fus/fusint"
 	"github.com/labstack/echo/v4"
 )
 
@@ -29,9 +29,8 @@ type PageInterface interface {
 	GetPutHandler() echo.HandlerFunc
 
 	// This one is for internal use
-	// TODO: make it private?
 	GetPageHandler(httpStatus int, session auth.SessionInterface, routesMap map[string]RoutesMap) echo.HandlerFunc
-	GetComponents() map[string]ComponentInterface
+	GetComponents() []fusint.ComponentInterface
 }
 
 // Page is used by every page in a site
@@ -59,7 +58,7 @@ type Page struct {
 	DeleteHandler   echo.HandlerFunc
 	PutHandler      echo.HandlerFunc
 
-	Components map[string]ComponentInterface
+	Components []fusint.ComponentInterface
 }
 
 const (
@@ -90,9 +89,17 @@ func (p *Page) GetPageHandler(httpStatus int, session auth.SessionInterface,
 		handler := p.GetPageDataHandler()
 		pageData, err := handler(c)
 
-		log.Println(pageData == true)
 		echoData["data"] = pageData
 		echoData["error"] = err
+
+		compoentsMap := echo.Map{}
+		compoennts := p.GetComponents()
+		for _, component := range compoennts {
+			component.SetContext(c)
+			compoentsMap[component.GetID()] = component
+		}
+
+		echoData["c"] = compoentsMap
 
 		err = c.Render(httpStatus, p.Template, echoData)
 		if err != nil {
@@ -112,13 +119,14 @@ func (p *Page) buildBasePageMetaData(c echo.Context) MetaData {
 	}
 }
 
-func (p *Page) GetID() string                      { return p.ID }
-func (p *Page) GetTitle() string                   { return p.Title }
-func (p *Page) GetFrame() string                   { return p.Frame }
-func (p *Page) GetURI() string                     { return p.URI }
-func (p *Page) GetPostHandler() echo.HandlerFunc   { return p.PostHandler }
-func (p *Page) GetDeleteHandler() echo.HandlerFunc { return p.DeleteHandler }
-func (p *Page) GetPutHandler() echo.HandlerFunc    { return p.PutHandler }
+func (p *Page) GetID() string                              { return p.ID }
+func (p *Page) GetTitle() string                           { return p.Title }
+func (p *Page) GetFrame() string                           { return p.Frame }
+func (p *Page) GetURI() string                             { return p.URI }
+func (p *Page) GetPostHandler() echo.HandlerFunc           { return p.PostHandler }
+func (p *Page) GetDeleteHandler() echo.HandlerFunc         { return p.DeleteHandler }
+func (p *Page) GetPutHandler() echo.HandlerFunc            { return p.PutHandler }
+func (p *Page) GetComponents() []fusint.ComponentInterface { return p.Components }
 
 func (p *Page) GetPageDataHandler() func(c echo.Context) (interface{}, error) {
 	return p.PageDataHandler
