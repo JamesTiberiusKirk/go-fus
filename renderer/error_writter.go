@@ -32,14 +32,16 @@ func returnErrToBrowser(w io.Writer, c echo.Context, returnError error) error {
 		return err
 	}
 
+	req := c.Request()
+
 	tmplData := struct {
 		ErrorMessage string
 		Method       string
 		Path         string
 	}{
 		ErrorMessage: returnError.Error(),
-		Method:       c.Request().Method,
-		Path:         c.Request().URL.RequestURI(),
+		Method:       req.Method,
+		Path:         req.URL.RequestURI(),
 	}
 
 	err = tmpl.Funcs(nil).ExecuteTemplate(w, "error-return", tmplData)

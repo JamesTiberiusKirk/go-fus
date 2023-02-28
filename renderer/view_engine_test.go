@@ -4,6 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"html/template"
+	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 
@@ -139,6 +143,57 @@ func TestViewEngine(t *testing.T) {
 			require.NoError(t, err)
 			assert.Equal(t, expectedHTML, buf.String())
 		})
+		t.Run("in dev mode to return error to user", func(t *testing.T) {
+			frameName := "normal-frame"
+			frames := map[string]string{
+				frameName: "basic_frame_template.gohtml",
+			}
+
+			ve := &ViewEngine{
+				config: Config{
+					Root:   "testdata",
+					Frames: frames,
+					Delims: Delims{
+						Left:  "{{",
+						Right: "}}",
+					},
+					DisableCache: true,
+					Dev:          true,
+				},
+				tplMap:   map[string]*template.Template{},
+				tplMutex: sync.RWMutex{},
+				fileHandler: func(config Config, tplFile string) (string, error) {
+					path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
+					require.NoError(t, err)
+
+					data, err := os.ReadFile(path)
+					require.NoError(t, err)
+
+					return string(data), nil
+				},
+			}
+
+			mockContext := NewMockContext(ctrl)
+			mockContext.EXPECT().
+				Get(FrameEchoContextName).
+				Return("misspelled")
+			mockContext.EXPECT().
+				Request().
+				Return(&http.Request{
+					Method: http.MethodGet,
+					URL: &url.URL{
+						Path: "/",
+					},
+				})
+
+			//nolint:lll // Dont care about test.
+			expectedHTML := "\n\t<style>\n\t#error{\n\t\tborder: solid red 5px;\n\t\tpadding: 5px;\n\t\tmargin: 5px;\n\t}\n\t</style>\n\t<div id=\"error\">\n\t\t<h1 style=\"color:red\">ERROR:</h1>\n\t\t<b>Request: </b> [GET] /\n\t\t<br/>\n\t\t<b>Message:</b> frame type not found misspelled\n\t</div>\n\t"
+
+			var buf bytes.Buffer
+			err := ve.Render(&buf, "page_with_parse_err.gohtml", "", mockContext)
+			require.NoError(t, err)
+			assert.Equal(t, expectedHTML, buf.String())
+		})
 	})
 	t.Run("Should faild when", func(t *testing.T) {
 		t.Run("non existent frame option is passed", func(t *testing.T) {
@@ -156,7 +211,7 @@ func TestViewEngine(t *testing.T) {
 			var buf bytes.Buffer
 			err := ve.Render(&buf, "page_with_test_tmpl_func.gohtml", nil, mockContext)
 			require.Equal(t, "", buf.String())
-			assert.Equal(t, err.Error(), "frame type not found nonexistent-frame")
+			assert.ErrorContains(t, err, "frame type not found nonexistent-frame")
 		})
 		t.Run("file handler error is returned", func(t *testing.T) {
 			frames := map[string]string{
@@ -207,7 +262,7 @@ func TestViewEngine(t *testing.T) {
 			err := ve.Render(&buf, "page_with_test_tmpl_func.gohtml", nil, mockContext)
 			require.Equal(t, "", buf.String())
 			//nolint:lll // Dont care about linting in tests.
-			assert.Equal(t, err.Error(), "ViewEngine render parser name:page_with_test_tmpl_func.gohtml, error: template: page_with_test_tmpl_func.gohtml:3: function \"test\" not defined")
+			assert.ErrorContains(t, err, "ViewEngine render parser name:page_with_test_tmpl_func.gohtml, error: template: page_with_test_tmpl_func.gohtml:3: function \"test\" not defined")
 		})
 	})
 }

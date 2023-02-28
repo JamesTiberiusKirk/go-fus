@@ -48,11 +48,14 @@ func (e *ViewEngine) Render(w io.Writer, name string, data interface{}, c echo.C
 	}
 
 	err := e.executeTemplate(w, name, data, frame)
-	if e.config.Dev {
-		return returnErrToBrowser(w, c, err)
+	if err != nil {
+		if e.config.Dev {
+			return returnErrToBrowser(w, c, err)
+		}
+		return fmt.Errorf("error executing template %w", err)
 	}
 
-	return err
+	return nil
 }
 
 func (e *ViewEngine) executeTemplate(out io.Writer, name string, data interface{},

@@ -15,14 +15,14 @@ type Component struct {
 	compoents       []fusint.ComponentInterface
 }
 
-type dataGetterFunc func(c echo.Context) (interface{}, error)
+type dataGetterFunc func(c echo.Context, params interface{}) (interface{}, error)
 
-func NewComponent(id, template string,
-	dataGetter dataGetterFunc) *Component {
+func NewComponent(id, template string, dataGetter dataGetterFunc, compoents ...fusint.ComponentInterface) *Component {
 	return &Component{
 		id:              id,
 		template:        template,
 		getCompoentData: dataGetter,
+		compoents:       compoents,
 	}
 }
 
@@ -34,17 +34,14 @@ func (comp *Component) GetID() string {
 	return comp.id
 }
 
-func (comp *Component) GenerateComponentData(parentData interface{}) (echo.Map, error) {
+func (comp *Component) GenerateComponentData(parentData interface{}, params ...interface{}) (echo.Map, error) {
 	if comp.context == nil {
 		return nil, errors.New("no context provided")
 	}
 
-	// comp.context.Set(renderer.FrameEchoContextName, renderer.Include)
-	// comp.context.Set("frame", "include")
-
 	echoData := echo.Map{}
 
-	cmpData, err := comp.getCompoentData(comp.context)
+	cmpData, err := comp.getCompoentData(comp.context, params[0])
 	echoData["cmpData"] = cmpData
 	echoData["error"] = err
 	echoData["parentData"] = parentData

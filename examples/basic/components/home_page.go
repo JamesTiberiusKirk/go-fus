@@ -1,6 +1,8 @@
 package components
 
 import (
+	"errors"
+
 	"github.com/JamesTiberiusKirk/go-fus/fus"
 	"github.com/labstack/echo/v4"
 )
@@ -14,14 +16,20 @@ type HomePageCompoentParams struct {
 	Data string
 }
 
-func NewHomePageComponent(params HomePageCompoentParams) *HomePageCompoent {
+func NewHomePageComponent() *HomePageCompoent {
 	return &HomePageCompoent{
 		Component: fus.NewComponent(
 			"homePageComponent",
 			"homepage_component.gohtml",
-			func(c echo.Context) (interface{}, error) {
-				return params, nil
+			func(c echo.Context, params interface{}) (interface{}, error) {
+				homePageCompoentParams, ok := params.(HomePageCompoentParams)
+				if !ok {
+					return nil, errors.New("missing params")
+				}
+
+				return homePageCompoentParams.Data, nil
 			},
+			NewListItem(),
 		),
 		ComponentSecret: "test-secret",
 	}

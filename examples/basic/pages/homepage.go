@@ -30,7 +30,7 @@ func NewHomepage() *Homepage {
 		Template:        "homepage.gohtml",
 		PageDataHandler: homepage.getPageData,
 		Components: []fusint.ComponentInterface{
-			components.NewHomePageComponent(components.HomePageCompoentParams{}),
+			components.NewHomePageComponent(),
 		},
 	}
 

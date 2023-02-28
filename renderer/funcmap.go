@@ -10,15 +10,15 @@ import (
 )
 
 type (
-	compnentFunc func(component fusint.ComponentInterface) (template.HTML, error)
+	compnentFunc func(component fusint.ComponentInterface, params ...interface{}) (template.HTML, error)
 	includeFunc  func(tmpl string) (template.HTML, error)
 )
 
 func (e *ViewEngine) getCmpFunc(data interface{}) compnentFunc {
-	return func(component fusint.ComponentInterface) (template.HTML, error) {
+	return func(component fusint.ComponentInterface, params ...interface{}) (template.HTML, error) {
 		var html template.HTML
 
-		componentData, errInclude := component.GenerateComponentData(data)
+		componentData, errInclude := component.GenerateComponentData(data, params)
 		if errInclude != nil {
 			return html, fmt.Errorf("error generating component data for: %s, %w",
 				component.GetID(), errInclude)
