@@ -1,4 +1,4 @@
-package renderer
+package fus
 
 import (
 	"fmt"
@@ -17,21 +17,39 @@ const (
 	FrameEchoContextName = "frame"
 )
 
-// ViewEngine view template engine.
-type ViewEngine struct {
-	config      Config
+// viewEngineConfig configuration options.
+type viewEngineConfig struct {
+	Root            string            // view root
+	Frames          map[string]string // list of frames
+	Partials        []string          // template partial, such as head, foot
+	Funcs           template.FuncMap  // template functions
+	DisableCache    bool              // disable cache, debug mode
+	Delims          templateDelims    // delimeters
+	FileHandlerType FileHandlerType   // type of existing file handler
+	Dev             bool
+}
+
+// templateDelims templateDelims for template.
+type templateDelims struct {
+	Left  string
+	Right string
+}
+
+// viewEngine view template engine.
+type viewEngine struct {
+	config      viewEngineConfig
 	tplMap      map[string]*template.Template
 	tplMutex    sync.RWMutex
 	fileHandler FileHandler
 }
 
 // New new template engine.
-func New(config Config) *ViewEngine {
+func newViewEngine(config viewEngineConfig) *viewEngine {
 	if config.FileHandlerType == "" {
 		config.FileHandlerType = SingleFolder
 	}
 
-	return &ViewEngine{
+	return &viewEngine{
 		config:      config,
 		tplMap:      make(map[string]*template.Template),
 		tplMutex:    sync.RWMutex{},
@@ -40,7 +58,7 @@ func New(config Config) *ViewEngine {
 }
 
 // Render render func called by echo c.Render().
-func (e *ViewEngine) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+func (e *viewEngine) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	//nolint:errcheck // No error to check
 	frame := c.Get(FrameEchoContextName).(string)
 	if frame == "" {
@@ -58,7 +76,7 @@ func (e *ViewEngine) Render(w io.Writer, name string, data interface{}, c echo.C
 	return nil
 }
 
-func (e *ViewEngine) executeTemplate(out io.Writer, name string, data interface{},
+func (e *viewEngine) executeTemplate(out io.Writer, name string, data interface{},
 	frame string) error {
 	var tpl *template.Template
 	var err error

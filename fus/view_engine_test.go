@@ -1,4 +1,4 @@
-package renderer
+package fus
 
 import (
 	"bytes"
@@ -149,11 +149,11 @@ func TestViewEngine(t *testing.T) {
 				frameName: "basic_frame_template.gohtml",
 			}
 
-			ve := &ViewEngine{
-				config: Config{
+			ve := &viewEngine{
+				config: viewEngineConfig{
 					Root:   "testdata",
 					Frames: frames,
-					Delims: Delims{
+					Delims: templateDelims{
 						Left:  "{{",
 						Right: "}}",
 					},
@@ -162,7 +162,7 @@ func TestViewEngine(t *testing.T) {
 				},
 				tplMap:   map[string]*template.Template{},
 				tplMutex: sync.RWMutex{},
-				fileHandler: func(config Config, tplFile string) (string, error) {
+				fileHandler: func(config viewEngineConfig, tplFile string) (string, error) {
 					path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
 					require.NoError(t, err)
 
@@ -219,11 +219,11 @@ func TestViewEngine(t *testing.T) {
 			}
 
 			expectedError := errors.New("test error")
-			ve := &ViewEngine{
-				config: Config{
+			ve := &viewEngine{
+				config: viewEngineConfig{
 					Root:   "testdata",
 					Frames: frames,
-					Delims: Delims{
+					Delims: templateDelims{
 						Left:  "{{",
 						Right: "}}",
 					},
@@ -231,7 +231,7 @@ func TestViewEngine(t *testing.T) {
 				},
 				tplMap:   map[string]*template.Template{},
 				tplMutex: sync.RWMutex{},
-				fileHandler: func(config Config, tplFile string) (string, error) {
+				fileHandler: func(config viewEngineConfig, tplFile string) (string, error) {
 					return "", expectedError
 				},
 			}
@@ -265,4 +265,31 @@ func TestViewEngine(t *testing.T) {
 			assert.ErrorContains(t, err, "ViewEngine render parser name:page_with_test_tmpl_func.gohtml, error: template: page_with_test_tmpl_func.gohtml:3: function \"test\" not defined")
 		})
 	})
+}
+
+func createTestViewEngine(t *testing.T, frames map[string]string, funcs template.FuncMap) *viewEngine {
+	ve := &viewEngine{
+		config: viewEngineConfig{
+			Root:   "testdata",
+			Frames: frames,
+			Delims: templateDelims{
+				Left:  "{{",
+				Right: "}}",
+			},
+			Funcs:        funcs,
+			DisableCache: true,
+		},
+		tplMap:   map[string]*template.Template{},
+		tplMutex: sync.RWMutex{},
+		fileHandler: func(config viewEngineConfig, tplFile string) (string, error) {
+			path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
+			require.NoError(t, err)
+
+			data, err := os.ReadFile(path)
+			require.NoError(t, err)
+
+			return string(data), nil
+		},
+	}
+	return ve
 }

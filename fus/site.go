@@ -7,7 +7,6 @@ import (
 	"net/url"
 
 	"github.com/JamesTiberiusKirk/go-fus/auth"
-	"github.com/JamesTiberiusKirk/go-fus/renderer"
 	"github.com/labstack/echo/v4"
 
 	echoMw "github.com/labstack/echo/v4/middleware"
@@ -163,7 +162,7 @@ func (s *Site) MapPages(pages *[]PageInterface, middlewares ...echo.MiddlewareFu
 }
 
 func (s *Site) buildRenderer() {
-	s.Echo.Renderer = renderer.New(renderer.Config{
+	s.Echo.Renderer = newViewEngine(viewEngineConfig{
 		Root:         s.TemplateRoot,
 		Frames:       s.FrameTemplates,
 		Funcs:        s.TemplateFuncs,

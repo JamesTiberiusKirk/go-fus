@@ -1,4 +1,4 @@
-package renderer
+package fus
 
 import (
 	"fmt"
@@ -14,13 +14,13 @@ const (
 )
 
 // FileHandler file handler interface.
-type FileHandler func(config Config, tplFile string) (content string, err error)
+type FileHandler func(config viewEngineConfig, tplFile string) (content string, err error)
 
 func getFileHandler(t FileHandlerType) FileHandler {
 	switch t {
 	case MultiFolder:
 		// TODO: Need to actually implement this
-		return func(config Config, tplFile string) (string, error) {
+		return func(config viewEngineConfig, tplFile string) (string, error) {
 			// Get the absolute path of the root template
 			path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
 			if err != nil {
@@ -34,7 +34,7 @@ func getFileHandler(t FileHandlerType) FileHandler {
 			return string(data), nil
 		}
 	case SingleFolder:
-		return func(config Config, tplFile string) (string, error) {
+		return func(config viewEngineConfig, tplFile string) (string, error) {
 			// Get the absolute path of the root template
 			path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile)
 			if err != nil {

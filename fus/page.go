@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/JamesTiberiusKirk/go-fus/auth"
-	"github.com/JamesTiberiusKirk/go-fus/fusint"
 	"github.com/labstack/echo/v4"
 )
 
@@ -30,7 +29,7 @@ type PageInterface interface {
 
 	// This one is for internal use
 	GetPageHandler(httpStatus int, session auth.SessionInterface, routesMap map[string]RoutesMap) echo.HandlerFunc
-	GetComponents() []fusint.ComponentInterface
+	GetComponents() []ComponentInterface
 }
 
 // Page is used by every page in a site
@@ -58,7 +57,7 @@ type Page struct {
 	DeleteHandler   echo.HandlerFunc
 	PutHandler      echo.HandlerFunc
 
-	Components []fusint.ComponentInterface
+	Components []ComponentInterface
 }
 
 const (
@@ -119,14 +118,14 @@ func (p *Page) buildBasePageMetaData(c echo.Context) MetaData {
 	}
 }
 
-func (p *Page) GetID() string                              { return p.ID }
-func (p *Page) GetTitle() string                           { return p.Title }
-func (p *Page) GetFrame() string                           { return p.Frame }
-func (p *Page) GetURI() string                             { return p.URI }
-func (p *Page) GetPostHandler() echo.HandlerFunc           { return p.PostHandler }
-func (p *Page) GetDeleteHandler() echo.HandlerFunc         { return p.DeleteHandler }
-func (p *Page) GetPutHandler() echo.HandlerFunc            { return p.PutHandler }
-func (p *Page) GetComponents() []fusint.ComponentInterface { return p.Components }
+func (p *Page) GetID() string                       { return p.ID }
+func (p *Page) GetTitle() string                    { return p.Title }
+func (p *Page) GetFrame() string                    { return p.Frame }
+func (p *Page) GetURI() string                      { return p.URI }
+func (p *Page) GetPostHandler() echo.HandlerFunc    { return p.PostHandler }
+func (p *Page) GetDeleteHandler() echo.HandlerFunc  { return p.DeleteHandler }
+func (p *Page) GetPutHandler() echo.HandlerFunc     { return p.PutHandler }
+func (p *Page) GetComponents() []ComponentInterface { return p.Components }
 
 func (p *Page) GetPageDataHandler() func(c echo.Context) (interface{}, error) {
 	return p.PageDataHandler

@@ -3,21 +3,29 @@ package fus
 import (
 	"errors"
 
-	"github.com/JamesTiberiusKirk/go-fus/fusint"
 	"github.com/labstack/echo/v4"
 )
+
+type ComponentInterface interface {
+	GetID() string
+	GetTemplate() string
+	SetContext(c echo.Context)
+	GenerateComponentData(parentData interface{}, params ...interface{}) (echo.Map, error)
+
+	// getCompoents() map[string]ComponentInterface
+}
 
 type Component struct {
 	context         echo.Context
 	id              string // For use in the template
 	template        string
 	getCompoentData dataGetterFunc
-	compoents       []fusint.ComponentInterface
+	compoents       []ComponentInterface
 }
 
 type dataGetterFunc func(c echo.Context, params interface{}) (interface{}, error)
 
-func NewComponent(id, template string, dataGetter dataGetterFunc, compoents ...fusint.ComponentInterface) *Component {
+func NewComponent(id, template string, dataGetter dataGetterFunc, compoents ...ComponentInterface) *Component {
 	return &Component{
 		id:              id,
 		template:        template,
@@ -58,7 +66,7 @@ func (comp *Component) GenerateComponentData(parentData interface{}, params ...i
 	return echoData, nil
 }
 
-func (comp *Component) GetCompoents() []fusint.ComponentInterface {
+func (comp *Component) GetCompoents() []ComponentInterface {
 	return comp.compoents
 }
 

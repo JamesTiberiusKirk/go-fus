@@ -1,5 +1,5 @@
 generate:
-	mockgen -package=renderer -destination=./renderer/echo_context_mock.go "github.com/labstack/echo/v4" Context 
+	mockgen -package=fus -destination=./fus/echo_context_mock.go "github.com/labstack/echo/v4" Context 
 	go generate
 
 test: generate

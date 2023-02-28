@@ -1,24 +1,27 @@
-package renderer
+package fus
 
 import (
 	"bytes"
 	"fmt"
 	"html/template"
 	"strings"
-
-	"github.com/JamesTiberiusKirk/go-fus/fusint"
 )
 
 type (
-	compnentFunc func(component fusint.ComponentInterface, params ...interface{}) (template.HTML, error)
+	compnentFunc func(component ComponentInterface, params ...interface{}) (template.HTML, error)
 	includeFunc  func(tmpl string) (template.HTML, error)
 )
 
-func (e *ViewEngine) getCmpFunc(data interface{}) compnentFunc {
-	return func(component fusint.ComponentInterface, params ...interface{}) (template.HTML, error) {
+func (e *viewEngine) getCmpFunc(data interface{}) compnentFunc {
+	return func(component ComponentInterface, params ...interface{}) (template.HTML, error) {
 		var html template.HTML
 
-		componentData, errInclude := component.GenerateComponentData(data, params)
+		var param interface{}
+		if len(params) > 0 {
+			param = params[0]
+		}
+
+		componentData, errInclude := component.GenerateComponentData(data, param)
 		if errInclude != nil {
 			return html, fmt.Errorf("error generating component data for: %s, %w",
 				component.GetID(), errInclude)
@@ -38,7 +41,7 @@ func (e *ViewEngine) getCmpFunc(data interface{}) compnentFunc {
 	}
 }
 
-func (e *ViewEngine) getIncludeJSFunc(data interface{}) includeFunc {
+func (e *viewEngine) getIncludeJSFunc(data interface{}) includeFunc {
 	return func(tmpl string) (template.HTML, error) {
 		buf := new(bytes.Buffer)
 		errInclude := e.executeTemplate(buf, tmpl, data, Include)
@@ -49,7 +52,7 @@ func (e *ViewEngine) getIncludeJSFunc(data interface{}) includeFunc {
 	}
 }
 
-func (e *ViewEngine) getIncludeTSFunc(data interface{}) includeFunc {
+func (e *viewEngine) getIncludeTSFunc(data interface{}) includeFunc {
 	return func(tmpl string) (template.HTML, error) {
 		buf := new(bytes.Buffer)
 		path := "jsdist/" + strings.Replace(tmpl, ".ts", ".js", 1)
@@ -61,7 +64,7 @@ func (e *ViewEngine) getIncludeTSFunc(data interface{}) includeFunc {
 	}
 }
 
-func (e *ViewEngine) getIncludeFunc(data interface{}) includeFunc {
+func (e *viewEngine) getIncludeFunc(data interface{}) includeFunc {
 	return func(tmpl string) (template.HTML, error) {
 		buf := new(bytes.Buffer)
 		errInclude := e.executeTemplate(buf, tmpl, data, Include)
