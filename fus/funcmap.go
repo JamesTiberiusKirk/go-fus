@@ -21,22 +21,27 @@ func (e *viewEngine) getCmpFunc(data interface{}) compnentFunc {
 			param = params[0]
 		}
 
-		componentData, errInclude := component.GenerateComponentData(data, param)
-		if errInclude != nil {
-			return html, fmt.Errorf("error generating component data for: %s, %w",
-				component.GetID(), errInclude)
+		if component.IsTempleted() {
+			componentData, errInclude := component.GenerateComponentData(data, param)
+			if errInclude != nil {
+				return html, fmt.Errorf("error generating component data for: %s, %w",
+					component.GetID(), errInclude)
+			}
+
+			buf := new(bytes.Buffer)
+			errInclude = e.executeTemplate(buf, component.GetTemplate(), componentData,
+				Include)
+			if errInclude != nil {
+				return html, fmt.Errorf("error executing template for component: %s, %w",
+					component.GetID(), errInclude)
+			}
+
+			//nolint:gosec // This is not user submitted data, we want that to be html because it is an include.
+			html = template.HTML(buf.String())
+			return html, nil
 		}
 
-		buf := new(bytes.Buffer)
-		errInclude = e.executeTemplate(buf, component.GetTemplate(), componentData,
-			Include)
-		if errInclude != nil {
-			return html, fmt.Errorf("error executing template for component: %s, %w",
-				component.GetID(), errInclude)
-		}
-
-		//nolint:gosec // This is not user submitted data, we want that to be html because it is an include.
-		html = template.HTML(buf.String())
+		html = component.DrawComponent()
 		return html, nil
 	}
 }

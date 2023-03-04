@@ -29,7 +29,8 @@ func NewHomepage() *Homepage {
 		Template:        "homepage.gohtml",
 		PageDataHandler: homepage.getPageData,
 		Components: []fus.ComponentInterface{
-			components.NewHomePageComponent(),
+			// components.NewHomePageComponent(),
+			components.NewFHTMLComponent(),
 		},
 	}
 
