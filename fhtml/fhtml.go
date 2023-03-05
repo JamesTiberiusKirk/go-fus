@@ -9,7 +9,7 @@ import (
 
 const (
 	//nolint:lll // tmpl string
-	elemTemplate = "<{{.T}}{{ if .ID }} id='{{.ID}}'{{ end }}{{.Attribs}}{{if .CSS}} style='{{.CSS}}'{{end}}>\n\t{{.Inner}}\n</{{.T}}>"
+	elemTemplate = "<{{.Tag}}{{ if .ID }} id='{{.ID}}'{{ end }}{{if .Classes}} class='{{.Classes}}'{{end}}{{.Attribs}}{{if .CSS}} style='{{.CSS}}'{{end}}>\n\t{{.Inner}}\n</{{.Tag}}>"
 )
 
 type elemStructData struct {
@@ -18,17 +18,18 @@ type elemStructData struct {
 	Attribs string
 	Inner   string
 	CSS     string
+	Classes string
 }
 
 type Opts struct {
 	Tag          string
 	ID           string
 	Class        []string
-	CSS          ElemCSS
+	CSS          *ElemCSS
 	OtherAttribs map[string]string
 }
 
-func Elem(attribs *Opts, innerHTML ...string) string {
+func Elem(attribs Opts, innerHTML ...string) string {
 	var b bytes.Buffer
 
 	inner := ""
@@ -41,13 +42,26 @@ func Elem(attribs *Opts, innerHTML ...string) string {
 		Inner: indentHTMLOneLevel(inner),
 	}
 
-	if attribs != nil {
+	if attribs.ID != "" {
 		data.ID = attribs.ID
-		data.CSS = getCssStyle(attribs.CSS)
 	}
 
-	tmpl, _ := template.New("element").Parse(elemTemplate)
-	_ = tmpl.Execute(&b, data)
+	if attribs.CSS != nil {
+		data.CSS = getCSSStyle(*attribs.CSS)
+	}
+
+	for _, class := range attribs.Class {
+		data.Classes += class + " "
+	}
+
+	tmpl, err := template.New("element").Parse(elemTemplate)
+	if err != nil {
+		panic(err)
+	}
+	err = tmpl.Execute(&b, data)
+	if err != nil {
+		panic(err)
+	}
 	return b.String()
 }
 
@@ -60,27 +74,27 @@ func indentHTMLOneLevel(html string) string {
 	return html
 }
 
-func getCssStyle(css ElemCSS) string {
+func getCSSStyle(css ElemCSS) string {
 	result := ""
 
-	// Getting other
+	// Getting other attributes
 	for k, v := range css.Other {
 		result += k + ":" + v + ";"
 	}
 
 	val := reflect.ValueOf(css)
 
-	// All of the fields apart from Other
+	// All of the fields apart from the ones without the css tag
 	for i := 0; i < val.NumField(); i++ {
-		fieldName := val.Type().Field(i).Name
-		if fieldName == "Other" {
-			break
+		fieldTag := val.Type().Field(i).Tag.Get("css")
+		fieldValueInterface := val.Field(i).Interface()
+
+		fieldValueString, ok := fieldValueInterface.(*string)
+		if !ok || fieldValueString == nil || fieldTag == "" {
+			continue
 		}
 
-		fieldValueInterface := val.Field(i).Interface()
-		fieldValueString := fieldValueInterface.(*string)
-
-		result += fieldName + ":" + *fieldValueString + ";"
+		result += fieldTag + ": " + *fieldValueString + ";"
 	}
 
 	return result

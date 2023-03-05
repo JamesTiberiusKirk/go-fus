@@ -3,198 +3,198 @@ package fhtml
 type ElemCSS struct {
 	Other map[string]string
 
-	AlignContent             *string
-	AnimationFillMode        *string
-	AnimationIterationCount  *string
-	AnimationName            *string
-	AnimationPlayState       *string
-	AnimationTimingFunction  *string
-	BackfaceVisibility       *string
-	Background               *string
-	BackgroundAttachment     *string
-	BackgroundBlendMode      *string
-	BackgroundClip           *string
-	BackgroundColor          *string
-	BackgroundImage          *string
-	BackgroundOrigin         *string
-	BackgroundPosition       *string
-	BackgroundRepeat         *string
-	BackgroundSize           *string
-	Border                   *string
-	BorderBottom             *string
-	BorderBottomColor        *string
-	BorderBottomLeftRadius   *string
-	BorderBottomRightRadius  *string
-	BorderBottomStyle        *string
-	BorderBottomWidth        *string
-	BorderCollapse           *string
-	BorderColor              *string
-	BorderImage              *string
-	BorderImageOutset        *string
-	BorderImageRepeat        *string
-	BorderImageSlice         *string
-	BorderImageSource        *string
-	BorderImageWidth         *string
-	BorderLeft               *string
-	BorderLeftColor          *string
-	BorderLeftStyle          *string
-	BorderLeftWidth          *string
-	BorderRadius             *string
-	BorderRight              *string
-	BorderRightColor         *string
-	BorderRightStyle         *string
-	BorderRightWidth         *string
-	BorderSpacing            *string
-	BorderStyle              *string
-	BorderTop                *string
-	BorderTopColor           *string
-	BorderTopLeftRadius      *string
-	BorderTopRightRadius     *string
-	BorderTopStyle           *string
-	BorderTopWidth           *string
-	BorderWidth              *string
-	Bottom                   *string
-	BoxShadow                *string
-	BoxSizing                *string
-	CaptionSide              *string
-	CaretColor               *string
-	Atcharset                *string
-	Clear                    *string
-	Clip                     *string
-	ClipPath                 *string
-	Color                    *string
-	ColumnCount              *string
-	ColumnFill               *string
-	ColumnGap                *string
-	ColumnRule               *string
-	ColumnRuleColor          *string
-	ColumnRuleStyle          *string
-	ColumnRuleWidth          *string
-	ColumnSpan               *string
-	ColumnWidth              *string
-	Columns                  *string
-	Content                  *string
-	CounterIncrement         *string
-	CounterReset             *string
-	Cursor                   *string
-	Direction                *string
-	Display                  *string
-	EmptyCells               *string
-	Filter                   *string
-	Flex                     *string
-	FlexBasis                *string
-	FlexDirection            *string
-	FlexFlow                 *string
-	FlexGrow                 *string
-	FlexShrink               *string
-	FlexWrap                 *string
-	Float                    *string
-	Font                     *string
-	AtfontFace               *string
-	FontFamily               *string
-	FontKerning              *string
-	FontSize                 *string
-	FontSizeAdjust           *string
-	FontStretch              *string
-	FontStyle                *string
-	FontVariant              *string
-	FontWeight               *string
-	Grid                     *string
-	GridArea                 *string
-	GridAutoColumns          *string
-	GridAutoFlow             *string
-	GridAutoRows             *string
-	GridColumn               *string
-	GridColumnEnd            *string
-	GridColumnGap            *string
-	GridColumnStart          *string
-	GridGap                  *string
-	GridRow                  *string
-	GridRowEnd               *string
-	GridRowGap               *string
-	GridRowStart             *string
-	GridTemplate             *string
-	GridTemplateAreas        *string
-	GridTemplateColumns      *string
-	GridTemplateRows         *string
-	Height                   *string
-	Hyphens                  *string
-	Atimport                 *string
-	JustifyContent           *string
-	Atkeyframes              *string
-	Left                     *string
-	LetterSpacing            *string
-	LineHeight               *string
-	ListStyle                *string
-	ListStyleImage           *string
-	ListStylePosition        *string
-	ListStyleType            *string
-	Margin                   *string
-	MarginBottom             *string
-	MarginLeft               *string
-	MarginRight              *string
-	MarginTop                *string
-	MaxHeight                *string
-	MaxWidth                 *string
-	Atmedia                  *string
-	MinHeight                *string
-	MinWidth                 *string
-	ObjectFit                *string
-	ObjectPosition           *string
-	Opacity                  *string
-	Order                    *string
-	Outline                  *string
-	OutlineColor             *string
-	OutlineOffset            *string
-	OutlineStyle             *string
-	OutlineWidth             *string
-	Overflow                 *string
-	OverflowX                *string
-	OverflowY                *string
-	Padding                  *string
-	PaddingBottom            *string
-	PaddingLeft              *string
-	PaddingRight             *string
-	PaddingTop               *string
-	PageBreakAfter           *string
-	PageBreakBefore          *string
-	PageBreakInside          *string
-	Perspective              *string
-	PerspectiveOrigin        *string
-	PointerEvents            *string
-	Position                 *string
-	Quotes                   *string
-	Right                    *string
-	ScrollBehavior           *string
-	TableLayout              *string
-	TextAlign                *string
-	TextAlignLast            *string
-	TextDecoration           *string
-	TextDecorationColor      *string
-	TextDecorationLine       *string
-	TextDecorationStyle      *string
-	TextIndent               *string
-	TextJustify              *string
-	TextOverflow             *string
-	TextShadow               *string
-	TextTransform            *string
-	Top                      *string
-	Transform                *string
-	TransformOrigin          *string
-	TransformStyle           *string
-	Transition               *string
-	TransitionDelay          *string
-	TransitionDuration       *string
-	TransitionProperty       *string
-	TransitionTimingFunction *string
-	UserSelect               *string
-	VerticalAlign            *string
-	Visibility               *string
-	WhiteSpace               *string
-	Width                    *string
-	WordBreak                *string
-	WordSpacing              *string
-	WordWrap                 *string
-	WritingMode              *string
-	ZIndex                   *string
+	AlignContent             *string `css:"align-content"`
+	AnimationFillMode        *string `css:"animation-fill-mode"`
+	AnimationIterationCount  *string `css:"animation-iteration-count"`
+	AnimationName            *string `css:"animation-name"`
+	AnimationPlayState       *string `css:"animation-play-state"`
+	AnimationTimingFunction  *string `css:"animation-timing-function"`
+	BackfaceVisibility       *string `css:"backface-visibility"`
+	Background               *string `css:"background"`
+	BackgroundAttachment     *string `css:"background-attachment"`
+	BackgroundBlendMode      *string `css:"background-blend-mode"`
+	BackgroundClip           *string `css:"background-clip"`
+	BackgroundColor          *string `css:"background-color"`
+	BackgroundImage          *string `css:"background-image"`
+	BackgroundOrigin         *string `css:"background-origin"`
+	BackgroundPosition       *string `css:"background-position"`
+	BackgroundRepeat         *string `css:"background-repeat"`
+	BackgroundSize           *string `css:"background-size"`
+	Border                   *string `css:"border"`
+	BorderBottom             *string `css:"border-bottom"`
+	BorderBottomColor        *string `css:"border-bottom-color"`
+	BorderBottomLeftRadius   *string `css:"border-bottom-left-radius"`
+	BorderBottomRightRadius  *string `css:"border-bottom-right-radius"`
+	BorderBottomStyle        *string `css:"border-bottom-style"`
+	BorderBottomWidth        *string `css:"border-bottom-width"`
+	BorderCollapse           *string `css:"border-collapse"`
+	BorderColor              *string `css:"border-color"`
+	BorderImage              *string `css:"border-image"`
+	BorderImageOutset        *string `css:"border-image-outset"`
+	BorderImageRepeat        *string `css:"border-image-repeat"`
+	BorderImageSlice         *string `css:"border-image-slice"`
+	BorderImageSource        *string `css:"border-image-source"`
+	BorderImageWidth         *string `css:"border-image-width"`
+	BorderLeft               *string `css:"border-left"`
+	BorderLeftColor          *string `css:"border-left-color"`
+	BorderLeftStyle          *string `css:"border-left-style"`
+	BorderLeftWidth          *string `css:"border-left-width"`
+	BorderRadius             *string `css:"border-radius"`
+	BorderRight              *string `css:"border-right"`
+	BorderRightColor         *string `css:"border-right-color"`
+	BorderRightStyle         *string `css:"border-right-style"`
+	BorderRightWidth         *string `css:"border-right-width"`
+	BorderSpacing            *string `css:"border-spacing"`
+	BorderStyle              *string `css:"border-style"`
+	BorderTop                *string `css:"border-top"`
+	BorderTopColor           *string `css:"border-top-color"`
+	BorderTopLeftRadius      *string `css:"border-top-left-radius"`
+	BorderTopRightRadius     *string `css:"border-top-right-radius"`
+	BorderTopStyle           *string `css:"border-top-style"`
+	BorderTopWidth           *string `css:"border-top-width"`
+	BorderWidth              *string `css:"border-width"`
+	Bottom                   *string `css:"bottom"`
+	BoxShadow                *string `css:"box-shadow"`
+	BoxSizing                *string `css:"box-sizing"`
+	CaptionSide              *string `css:"caption-side"`
+	CaretColor               *string `css:"caret-color"`
+	Atcharset                *string `css:"atcharset"`
+	Clear                    *string `css:"clear"`
+	Clip                     *string `css:"clip"`
+	ClipPath                 *string `css:"clip-path"`
+	Color                    *string `css:"color"`
+	ColumnCount              *string `css:"column-count"`
+	ColumnFill               *string `css:"column-fill"`
+	ColumnGap                *string `css:"column-gap"`
+	ColumnRule               *string `css:"column-rule"`
+	ColumnRuleColor          *string `css:"column-rule-color"`
+	ColumnRuleStyle          *string `css:"column-rule-style"`
+	ColumnRuleWidth          *string `css:"column-rule-width"`
+	ColumnSpan               *string `css:"column-span"`
+	ColumnWidth              *string `css:"column-width"`
+	Columns                  *string `css:"columns"`
+	Content                  *string `css:"content"`
+	CounterIncrement         *string `css:"counter-increment"`
+	CounterReset             *string `css:"counter-reset"`
+	Cursor                   *string `css:"cursor"`
+	Direction                *string `css:"direction"`
+	Display                  *string `css:"display"`
+	EmptyCells               *string `css:"empty-cells"`
+	Filter                   *string `css:"filter"`
+	Flex                     *string `css:"flex"`
+	FlexBasis                *string `css:"flex-basis"`
+	FlexDirection            *string `css:"flex-direction"`
+	FlexFlow                 *string `css:"flex-flow"`
+	FlexGrow                 *string `css:"flex-grow"`
+	FlexShrink               *string `css:"flex-shrink"`
+	FlexWrap                 *string `css:"flex-wrap"`
+	Float                    *string `css:"float"`
+	Font                     *string `css:"font"`
+	AtfontFace               *string `css:"atfont-face"`
+	FontFamily               *string `css:"font-family"`
+	FontKerning              *string `css:"font-kerning"`
+	FontSize                 *string `css:"font-size"`
+	FontSizeAdjust           *string `css:"font-size-adjust"`
+	FontStretch              *string `css:"font-stretch"`
+	FontStyle                *string `css:"font-style"`
+	FontVariant              *string `css:"font-variant"`
+	FontWeight               *string `css:"font-weight"`
+	Grid                     *string `css:"grid"`
+	GridArea                 *string `css:"grid-area"`
+	GridAutoColumns          *string `css:"grid-auto-columns"`
+	GridAutoFlow             *string `css:"grid-auto-flow"`
+	GridAutoRows             *string `css:"grid-auto-rows"`
+	GridColumn               *string `css:"grid-column"`
+	GridColumnEnd            *string `css:"grid-column-end"`
+	GridColumnGap            *string `css:"grid-column-gap"`
+	GridColumnStart          *string `css:"grid-column-start"`
+	GridGap                  *string `css:"grid-gap"`
+	GridRow                  *string `css:"grid-row"`
+	GridRowEnd               *string `css:"grid-row-end"`
+	GridRowGap               *string `css:"grid-row-gap"`
+	GridRowStart             *string `css:"grid-row-start"`
+	GridTemplate             *string `css:"grid-template"`
+	GridTemplateAreas        *string `css:"grid-template-areas"`
+	GridTemplateColumns      *string `css:"grid-template-columns"`
+	GridTemplateRows         *string `css:"grid-template-rows"`
+	Height                   *string `css:"height"`
+	Hyphens                  *string `css:"hyphens"`
+	Atimport                 *string `css:"atimport"`
+	JustifyContent           *string `css:"justify-content"`
+	Atkeyframes              *string `css:"atkeyframes"`
+	Left                     *string `css:"left"`
+	LetterSpacing            *string `css:"letter-spacing"`
+	LineHeight               *string `css:"line-height"`
+	ListStyle                *string `css:"list-style"`
+	ListStyleImage           *string `css:"list-style-image"`
+	ListStylePosition        *string `css:"list-style-position"`
+	ListStyleType            *string `css:"list-style-type"`
+	Margin                   *string `css:"margin"`
+	MarginBottom             *string `css:"margin-bottom"`
+	MarginLeft               *string `css:"margin-left"`
+	MarginRight              *string `css:"margin-right"`
+	MarginTop                *string `css:"margin-top"`
+	MaxHeight                *string `css:"max-height"`
+	MaxWidth                 *string `css:"max-width"`
+	Atmedia                  *string `css:"atmedia"`
+	MinHeight                *string `css:"min-height"`
+	MinWidth                 *string `css:"min-width"`
+	ObjectFit                *string `css:"object-fit"`
+	ObjectPosition           *string `css:"object-position"`
+	Opacity                  *string `css:"opacity"`
+	Order                    *string `css:"order"`
+	Outline                  *string `css:"outline"`
+	OutlineColor             *string `css:"outline-color"`
+	OutlineOffset            *string `css:"outline-offset"`
+	OutlineStyle             *string `css:"outline-style"`
+	OutlineWidth             *string `css:"outline-width"`
+	Overflow                 *string `css:"overflow"`
+	OverflowX                *string `css:"overflow-x"`
+	OverflowY                *string `css:"overflow-y"`
+	Padding                  *string `css:"padding"`
+	PaddingBottom            *string `css:"padding-bottom"`
+	PaddingLeft              *string `css:"padding-left"`
+	PaddingRight             *string `css:"padding-right"`
+	PaddingTop               *string `css:"padding-top"`
+	PageBreakAfter           *string `css:"page-break-after"`
+	PageBreakBefore          *string `css:"page-break-before"`
+	PageBreakInside          *string `css:"page-break-inside"`
+	Perspective              *string `css:"perspective"`
+	PerspectiveOrigin        *string `css:"perspective-origin"`
+	PointerEvents            *string `css:"pointer-events"`
+	Position                 *string `css:"position"`
+	Quotes                   *string `css:"quotes"`
+	Right                    *string `css:"right"`
+	ScrollBehavior           *string `css:"scroll-behavior"`
+	TableLayout              *string `css:"table-layout"`
+	TextAlign                *string `css:"text-align"`
+	TextAlignLast            *string `css:"text-align-last"`
+	TextDecoration           *string `css:"text-decoration"`
+	TextDecorationColor      *string `css:"text-decoration-color"`
+	TextDecorationLine       *string `css:"text-decoration-line"`
+	TextDecorationStyle      *string `css:"text-decoration-style"`
+	TextIndent               *string `css:"text-indent"`
+	TextJustify              *string `css:"text-justify"`
+	TextOverflow             *string `css:"text-overflow"`
+	TextShadow               *string `css:"text-shadow"`
+	TextTransform            *string `css:"text-transform"`
+	Top                      *string `css:"top"`
+	Transform                *string `css:"transform"`
+	TransformOrigin          *string `css:"transform-origin"`
+	TransformStyle           *string `css:"transform-style"`
+	Transition               *string `css:"transition"`
+	TransitionDelay          *string `css:"transition-delay"`
+	TransitionDuration       *string `css:"transition-duration"`
+	TransitionProperty       *string `css:"transition-property"`
+	TransitionTimingFunction *string `css:"transition-timing-function"`
+	UserSelect               *string `css:"user-select"`
+	VerticalAlign            *string `css:"vertical-align"`
+	Visibility               *string `css:"visibility"`
+	WhiteSpace               *string `css:"white-space"`
+	Width                    *string `css:"width"`
+	WordBreak                *string `css:"word-break"`
+	WordSpacing              *string `css:"word-spacing"`
+	WordWrap                 *string `css:"word-wrap"`
+	WritingMode              *string `css:"writing-mode"`
+	ZIndex                   *string `css:"z-index"`
 }
