@@ -10,6 +10,8 @@ import (
 const (
 	//nolint:lll // tmpl string
 	elemTemplate = "<{{.Tag}}{{ if .ID }} id='{{.ID}}'{{ end }}{{if .Classes}} class='{{.Classes}}'{{end}}{{.Attribs}}{{if .CSS}} style='{{.CSS}}'{{end}}>\n\t{{.Inner}}\n</{{.Tag}}>"
+
+	cssTagName = "css"
 )
 
 type elemStructData struct {
@@ -86,7 +88,7 @@ func getCSSStyle(css ElemCSS) string {
 
 	// All of the fields apart from the ones without the css tag
 	for i := 0; i < val.NumField(); i++ {
-		fieldTag := val.Type().Field(i).Tag.Get("css")
+		fieldTag := val.Type().Field(i).Tag.Get(cssTagName)
 		fieldValueInterface := val.Field(i).Interface()
 
 		fieldValueString, ok := fieldValueInterface.(*string)
